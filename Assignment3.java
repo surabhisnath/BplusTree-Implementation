@@ -344,45 +344,80 @@ class Btree
 	
 	public void FindRange(String a , String b)
 	{
-		
+		findret obj = null;
 		if(field.equals("Instructor ID"))
 		{
 			db.sort(new OrderRecordsID());
 			int i = binsearch(db,1,a,0,db.size()-1);
-			findret obj = find(db.get(i).instructor_id);
-			
+			obj = find(db.get(i).instructor_id);
 		}
 		
 		else if(field.equals("Instructor Name"))
 		{
 			db.sort(new OrderRecordsName());
 			int i = binsearch(db,1,a,0,db.size()-1);
-			findret obj = find(db.get(i).instructor_name);
+			obj = find(db.get(i).instructor_name);
 		}
 		
 		else if(field.equals("Department"))
 		{
 			db.sort(new OrderRecordsDept());
 			int i = binsearch(db,1,a,0,db.size()-1);
-			findret obj = find(db.get(i).department);
+			obj = find(db.get(i).department);
 		}
 
 		else if(field.equals("Salary"))
 		{
 			db.sort(new OrderRecordsSal());
 			int i = binsearch(db,1,a,0,db.size()-1);
-			findret obj = find(db.get(i).salary+"");
+			obj = find(db.get(i).salary+"");
 		}
 		
-		 
 		
+		if(obj != null)
+		{
+			boolean flag = true;
+			while(flag == true)
+			{
+
+				if(obj.index < obj.r.keys.size())
+				{
+					for(int j=0; j<obj.r.pointers_r.get(obj.index).size(); j++)
+						System.out.println(obj.r.pointers_r.get(j));
+					
+					if(compare(obj.r.keys.get(obj.index+1),b)<=0)
+					{
+						obj.index++;
+					}
+					
+					else
+						flag = false;
+				}
+			
+				else
+				{
+					if(obj.r.right_leaf!=null)
+					{
+						obj.r = obj.r.right_leaf;
+						obj.index = 0;
+					}
+					
+					else
+						flag = false;
+				}
+			}
+		}
+		
+		else
+			System.out.println("No record in the given range.");
 		
 	}
 	
+	//------------------------------------------------------------------------------
+	
 	public void insert(record x) 
 	{
-		
-		
+	 
 		
 	}
 	
@@ -410,8 +445,7 @@ class Btree
 				if(one > two)
 					return 1;
 				else
-					return 0;
-				
+					return -1;
 			}
 			
 			else
@@ -429,7 +463,8 @@ class treenode
 	
 	ArrayList<treenode> pointers_tn; 
 	ArrayList<ArrayList<record>> pointers_r;
-	treenode nextleaf;
+	treenode right_leaf;
+	
 	public treenode()
 	{
 		keys = new ArrayList<String>();
