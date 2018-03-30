@@ -121,147 +121,13 @@ class Btree
 	int num_nodes = 0;
 	ArrayList<record> db;
 	ArrayList<record> shallowdb;
-	int N = 2;
+	int N = 3;
 	
 	
 	treenode root;
 	String field;
 	
 	
-	public treenode findhelp(String v)
-	{
-		treenode r = root;
-		
-		while(r.isleaf() == false)
-		{
-			int i = -1;
-			int counter=0;
-			for(int j=0; j<r.keys.size(); j++)
-			{
-				if(compare(r.keys.get(j), v) > 0)
-				{
-					i = j;
-					counter=1;
-					break;
-				}					
-			}
-			
-			if(counter==0)
-			{
-				int index = -1;
-				
-				for(int k=0; k<r.pointers_tn.size(); k++)
-				{
-					if(r.pointers_tn.get(k)!=null)
-					{
-						index = k;
-					}
-				}
-				
-				r = r.pointers_tn.get(index);
-			}
-			
-			
-			else if(v == r.keys.get(i))
-			{
-				r = r.pointers_tn.get(i+1);
-			}
-			
-			else
-			{
-				r = r.pointers_tn.get(i);
-			}
-		}
-		
-		
-		
-		return r;
-	}
-	
-	public findret find(String v)
-	{
-		System.out.println("jj"+v);
-		treenode r = root;
-		System.out.println("a");
-		while(r.isleaf() == false)
-		{
-			System.out.println("b");
-			int i = -1;
-			int counter=0;
-			for(int j=0; j<r.keys.size(); j++)
-			{
-				if(compare(r.keys.get(j), v) > 0)
-				{
-					
-					i = j;
-					counter=1;
-					break;
-				}					
-			}
-			
-			if(counter==0)
-			{
-				System.out.println("c");
-				int index = -1;
-				
-				for(int k=0; k<r.pointers_tn.size(); k++)
-				{
-					if(r.pointers_tn.get(k)!=null)
-					{
-						index = k;
-					}
-				}
-				
-				r = r.pointers_tn.get(index);
-			}
-			
-			
-			else if(v == r.keys.get(i))
-			{
-				System.out.println("d");
-				r = r.pointers_tn.get(i+1);
-			}
-			
-			else
-			{
-				System.out.println("e");
-				r = r.pointers_tn.get(i);
-			}
-		}
-		
-		
-		for(int l = 0; l<r.keys.size(); l++)
-		{
-			System.out.println(r.keys.get(l));
-			if(v.equals(r.keys.get(l)))
-			{
-				System.out.println(v);
-				System.out.println(r.keys.get(l));
-				return new findret(r, l);
-			}
-		}
-		
-		System.out.println("f");
-		return null;
-		
-	}
-	
-	public void printAll(String v)
-	{
-		
-		findret obj = find(v);
-		treenode node = obj.r;
-		int i = obj.index;
-		
-		if(obj == null)
-			return;
-			 
-		for(int k=0;k<node.pointers_r.get(i).size();k++)
-		{
-						
-			System.out.println(node.pointers_r.get(i).get(k));
-		}
-	}
 	
 	public int binsearch(ArrayList<record> arr, int index, String a,int start,int end)
 	{
@@ -463,6 +329,24 @@ class Btree
 		}
 	}
 	
+	public void printAll(String v)
+	{
+		
+		findret obj = find(v);
+		treenode node = obj.r;
+		int i = obj.index;
+		
+		if(obj == null)
+			return;
+			 
+		for(int k=0;k<node.pointers_r.get(i).size();k++)
+		{
+						
+			System.out.println(node.pointers_r.get(i).get(k));
+		}
+	}
+	
+	
 	
 	public void FindRange(String a , String b)
 	{
@@ -535,11 +419,137 @@ class Btree
 		
 	}
 	
+	//---------------------------------------------------------------------
+	
+	
+	public treenode findhelp(String v)
+	{
+		treenode r = root;
+		
+		while(r.isleaf() == false)
+		{
+			int i = -1;
+			int counter=0;
+			for(int j=0; j<r.keys.size(); j++)
+			{
+				if(compare(r.keys.get(j), v) > 0)
+				{
+					i = j;
+					counter=1;
+					break;
+				}					
+			}
+			
+			if(counter==0)
+			{
+				int index = -1;
+				
+				for(int k=0; k<r.pointers_tn.size(); k++)
+				{
+					if(r.pointers_tn.get(k)!=null)
+					{
+						index = k;
+					}
+				}
+				
+				r = r.pointers_tn.get(index);
+			}
+			
+			
+			else if(v == r.keys.get(i))
+			{
+				r = r.pointers_tn.get(i+1);
+			}
+			
+			else
+			{
+				r = r.pointers_tn.get(i);
+			}
+		}
+		
+		
+		
+		return r;
+	}
+	
+	//--------------------------------------------------------------------------
+	//	twodept
+	//	/     \
+	//onedept  twodept
+	public findret find(String v)
+	{
+		System.out.println("jj"+v);
+		treenode r = root;
+		System.out.println("a");
+		while(r.isleaf() == false)
+		{
+			System.out.println("b");
+			int i = -1;
+			int counter=0;
+			for(int j=0; j<r.keys.size(); j++)
+			{
+				if(compare(r.keys.get(j), v) > 0)
+				{
+					
+					i = j;
+					counter=1;
+					break;
+				}					
+			}
+			
+			if(counter==0)
+			{
+				System.out.println("c");
+				int index = -1;
+				
+				for(int k=0; k<r.pointers_tn.size(); k++)
+				{
+					if(r.pointers_tn.get(k)!=null)
+					{
+						index = k;
+					}
+				}
+				
+				r = r.pointers_tn.get(index);
+			}
+			
+			
+			else if(v == r.keys.get(i))
+			{
+				System.out.println("d");
+				r = r.pointers_tn.get(i+1);
+			}
+			
+			else
+			{
+				System.out.println("e");
+				r = r.pointers_tn.get(i);
+			}
+		}
+		
+		
+		for(int l = 0; l<r.keys.size(); l++)
+		{
+			System.out.println(r.keys.get(l));
+			if(v.equals(r.keys.get(l)))
+			{
+				System.out.println(v);
+				System.out.println(r.keys.get(l));
+				return new findret(r, l);
+			}
+		}
+		
+		System.out.println("f");
+		return null;
+		
+	}
+	
+	
+	
 	//------------------------------------------------------------------------------
 	
 	public void insert(record x) 
 	{
-		
 		String value;
 		System.out.println(field);
 		if(field.equals("Instructor ID"))
@@ -590,6 +600,7 @@ class Btree
 			System.out.println("D");
 			treenode r = findhelp(value);
 			
+			System.out.println(r.keys.get(0));
 			if(r.keys.size()<(N-1))
 			{
 				System.out.println("E");
@@ -617,8 +628,13 @@ class Btree
 					r.pointers_r.get(y).add(x);
 				}
 			}
-					
-					
+			
+			
+		//          twoDept
+		//   threedept	  twodept
+		//onedept  threedept      
+			
+			
 			else	//split it
 			{
 				System.out.println("H");
@@ -643,12 +659,14 @@ class Btree
 				{
 					System.out.println("J");
 					int y;
+					System.out.println("t.keys.size"+t.keys.size());
 					for(y=0; y<t.keys.size(); y++)
 					{
 						if(compare(t.keys.get(y),value)>=0)
 						break;
 					}
-							
+					
+					System.out.println("yis"+y);
 					t.keys.add(y, value);
 					t.pointers_r.add(y,new ArrayList<record>());
 					t.pointers_r.get(y).add(x);
@@ -698,8 +716,11 @@ class Btree
 			a.parent = r;
 			c.parent = r;
 			root = r;
+			root.leaf = false;
 			return;
 		}
+		
+		
 		
 		treenode p = a.parent;
 		
@@ -933,7 +954,7 @@ public class Assignment3
 		tree.insert(four);
 		tree.insert(five);
 		
-		findret leaf1 = tree.find("1.0");
+		findret leaf1 = tree.find("oneDept");
 		System.out.println(leaf1==null);
 		System.out.println();
 		treenode leafone =leaf1.r;
