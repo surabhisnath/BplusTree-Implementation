@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.*;
 import java.lang.*;
 import java.lang.reflect.Array;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -76,44 +75,9 @@ class Btree implements Serializable
 	ArrayList<record> db;
 	ArrayList<record> shallowdb;
 	int N = 3;
-
-	ArrayList<record> allrec;	
+	
 	treenode root;
 	String field;
-	
-	
-	public static void serialize(List<record> p) throws IOException 
-	{
-		ObjectOutputStream out = null;
-		try 
-		{
-			out = new ObjectOutputStream (new FileOutputStream("Records.txt"));
-			out.writeObject(p);
-		}
-		
-		finally 
-		{
-			out.close();
-		}
-	}
-	
-	
-	public static List<record> deserialize() throws IOException, ClassNotFoundException 
-	{
-		ObjectInputStream in = null;
-		try 
-		{
-			in = new ObjectInputStream (new FileInputStream("Records.txt"));
-			@SuppressWarnings("unchecked")
-			List<record> p = (List<record>) in.readObject();
-			return p;
-		} 
-		
-		finally 
-		{
-			in.close();
-		}
-	}
 	
 	
 	
@@ -538,11 +502,6 @@ class Btree implements Serializable
 				insert_in_parent(r,k,newnode);		
 			}
 		}
-		
-		if(allrec == null)
-			allrec = new ArrayList<record>();
-		allrec.add(x);
-		serialize(allrec);
 	}
 	
 	
@@ -1015,6 +974,40 @@ public class Assignment3
 	}
 
 	
+	public static void serialize(List<record> p) throws IOException 
+	{
+		ObjectOutputStream out = null;
+		try 
+		{
+			out = new ObjectOutputStream (new FileOutputStream("Records.txt"));
+			out.writeObject(p);
+		}
+		
+		finally 
+		{
+			out.close();
+		}
+	}
+	
+	
+	public static List<record> deserialize(String name) throws IOException, ClassNotFoundException 
+	{
+		ObjectInputStream in = null;
+		try 
+		{
+			in = new ObjectInputStream (new FileInputStream("Records.txt"));
+			@SuppressWarnings("unchecked")
+			List<record> p = (List<record>) in.readObject();
+			return p;
+		} 
+		
+		finally 
+		{
+			in.close();
+		}
+	}
+	
+	
 	public static void main(String[] args) throws IOException, ClassNotFoundException
 	{
 		R.init(System.in);
@@ -1030,11 +1023,7 @@ public class Assignment3
 		
 		obj.database = new ArrayList<record>();
 		obj.create_database();
-	
-		//serialize(obj.recList);
-		//List<record> fullist = deserialize();
 		
-		obj.tree.allrec = obj.recList;
 		obj.tree.db = new ArrayList<record>(obj.database);
 		obj.tree.shallowdb = obj.database;
 		serialize(obj.tree);
@@ -1099,6 +1088,8 @@ public class Assignment3
 						record x = new record(a,b,c,d,e);
 						tree.insert(x);
 						System.out.println("Successfully inserted record");
+						obj.recList.add(x);
+						serialize(obj.recList);
 						break;
 				
 				case 5: System.out.println("Enter details of record to delete: "); 
@@ -1116,22 +1107,14 @@ public class Assignment3
 						record y = new record(A,B,C,D,E);
 						tree.delete(y);
 						System.out.println("Successfully deleted record");
+						obj.recList.remove(y);
+						serialize(obj.recList);
 						break;
 			}
 			
 			serialize(tree);
 			
 		}while(choose!=6);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		
