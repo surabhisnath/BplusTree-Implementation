@@ -75,11 +75,11 @@ class Btree implements Serializable
 	ArrayList<record> db;
 	ArrayList<record> shallowdb;
 	int N = 3;
-	
 	treenode root;
 	String field;
 	
-	
+
+	//----------------------------------------------------------------------------------------------
 	
 	public void printAll(String v)
 	{
@@ -96,11 +96,13 @@ class Btree implements Serializable
 		
 		for(int k=0; k<node.pointers_r.get(i).size(); k++)
 		{
-			System.out.println(k+"kis");
 			record rec = node.pointers_r.get(i).get(k);
 			System.out.println(rec);
 		}
 	}
+	
+	
+	//----------------------------------------------------------------------------------------------
 	
 	
 	public void FindRange(String a , String b)
@@ -113,23 +115,18 @@ class Btree implements Serializable
 			System.out.println("There are no records in the given range");
 			return;
 		}
-		
-		System.out.println("aaaaa"+tem.keys.get(0));
-		
+				
 		
 		int l;
 		boolean fl;
 		while(true)
 		{
 			fl=false;
-			System.out.println("sizeis"+tem.keys.size());
+			
 			for(l = 0; l<tem.keys.size(); l++)
 			{
-				System.out.println("how same l"+l);
-				System.out.println(tem.keys.get(l)+"l"+l);
 				if(compare(tem.keys.get(l),a)>=0)
 				{
-					System.out.println("Im reaking");
 					fl=true;
 					break;
 				}
@@ -140,9 +137,6 @@ class Btree implements Serializable
 			else
 				break;
 		}
-		
-		System.out.println("l is:"+l);
-		System.out.println(tem.keys.get(l));
 		
 		if(tem.right_leaf == null && l==tem.keys.size()-1 && fl==false)
 		{
@@ -156,21 +150,12 @@ class Btree implements Serializable
 				boolean flag=false;
 				for(int m = l; m<tem.keys.size(); m++)
 				{
-					System.out.println(tem.keys.get(m));
-					System.out.println();
-					System.out.println(tem.pointers_r.size());
-					System.out.println(tem.pointers_r.get(m).size());
 					for(int k=0; k<tem.pointers_r.get(m).size(); k++)
 					{
-						System.out.println("printing recccccc");
 						record rec = tem.pointers_r.get(m).get(k);
 						System.out.println(rec);
 					}
 					
-					System.out.println("ME HEREEEEEEEEEE");
-					System.out.println(tem.keys.get(m));
-					System.out.println(b);
-					System.out.println(compare(tem.keys.get(m),b));
 					if(compare(tem.keys.get(m),b)>=0)
 					{
 						flag=true;
@@ -180,7 +165,6 @@ class Btree implements Serializable
 				
 				if(flag==false)
 				{
-					System.out.println("yuhoo"+tem.keys.get(0));
 					tem=tem.right_leaf;
 					if(tem==null)
 						break;
@@ -200,17 +184,14 @@ class Btree implements Serializable
 	{
 		treenode r = root;
 		
-		System.out.println("1");
 		while(r.leaf == false)
 		{
-			System.out.println("2");
 			int i = -1;
 			int counter=0;
 			for(int j=0; j<r.keys.size(); j++)
 			{
 				if(compare(r.keys.get(j), v) >= 0)
 				{
-					System.out.println("3");
 					i = j;
 					counter=1;
 					break;
@@ -218,37 +199,22 @@ class Btree implements Serializable
 			}
 			
 			if(counter==0)
-			{
-//				int index = -1;
-//				
-//				for(int k=0; k<r.pointers_tn.size(); k++)
-//				{
-//					if(r.pointers_tn.get(k)!=null)
-//					{
-//						index = k;
-//					}
-//				}
-				
-				System.out.println("4");
+			{	
 				r = r.pointers_tn.get(r.pointers_tn.size()-1);
 			}
 			
 			
 			else if(v == r.keys.get(i))
 			{
-				System.out.println("5");
 				r = r.pointers_tn.get(i+1);
 			}
 			
 			else
 			{
-				System.out.println("6");
 				r = r.pointers_tn.get(i);
 			}
 		}
 		
-		System.out.println("7");
-		System.out.println(r.keys.get(0));
 		return r;
 	}
 	
@@ -256,12 +222,10 @@ class Btree implements Serializable
 
 	public findret find(String v)
 	{
-		System.out.println("jj"+v);
 		treenode r = root;
-		System.out.println("a");
+		
 		while(r.leaf == false)
 		{
-			System.out.println("b");
 			int i = -1;
 			int counter=0;
 			for(int j=0; j<r.keys.size(); j++)
@@ -277,7 +241,6 @@ class Btree implements Serializable
 			
 			if(counter==0)
 			{
-				System.out.println("c");
 				int index = -1;
 				
 				for(int k=0; k<r.pointers_tn.size(); k++)
@@ -294,13 +257,11 @@ class Btree implements Serializable
 			
 			else if(v == r.keys.get(i))
 			{
-				System.out.println("d");
 				r = r.pointers_tn.get(i+1);
 			}
 			
 			else
 			{
-				System.out.println("e");
 				r = r.pointers_tn.get(i);
 			}
 		}
@@ -308,18 +269,13 @@ class Btree implements Serializable
 		
 		for(int l = 0; l<r.keys.size(); l++)
 		{
-			System.out.println(r.keys.get(l));
 			if(v.equals(r.keys.get(l)))
 			{
-				System.out.println(v);
-				System.out.println(r.keys.get(l));
 				return new findret(r, l);
 			}
 		}
 		
-		System.out.println("f");
 		return null;
-		
 	}
 	
 	
@@ -329,7 +285,6 @@ class Btree implements Serializable
 	public void insert(record x) throws IOException 
 	{
 		String value;
-		System.out.println(field);
 		if(field.equals("Instructor ID"))
 		{		
 			System.out.println("abc");
@@ -354,7 +309,6 @@ class Btree implements Serializable
 			
 		if(num_nodes == 0)
 		{
-			System.out.println("A");
 			root = new treenode();
 			root.leaf = true;
 			root.keys.add(0,value);
@@ -364,56 +318,38 @@ class Btree implements Serializable
 			return;
 		}
 				
-		System.out.println("B");			
 		findret obj = find(value);
 				
 		if(obj!=null)
 		{
-			System.out.println("C");
 			///obj.r.pointers_r.add(obj.index,new ArrayList<record>());
 			obj.r.pointers_r.get(obj.index).add(x);
 		}
 				
 		else
 		{
-			System.out.println("D");
 			treenode r = findhelp(value);
-			
-			System.out.println(r.keys.get(0));
 			
 			if(r.keys.size()<(N-1))
 			{
-				System.out.println("E");
-				//insert in leaf
-//				if(compare(r.keys.get(0), value)>0)
-//				{
-//					System.out.println("F");
-//					r.keys.add(0, value);
-//					r.pointers_r.add(0,new ArrayList<record>());
-//					r.pointers_r.get(0).add(x);
-//				}
-						
-				//else
+				
+				int y;
+				for(y=0; y<r.keys.size(); y++)
 				{
-					System.out.println("G");
-					int y;
-					for(y=0; y<r.keys.size(); y++)
-					{
-						if(compare(r.keys.get(y),value)>=0)
-						break;
-					}
-							
-					r.keys.add(y, value);
-					r.pointers_r.add(y,new ArrayList<record>());
-					r.pointers_r.get(y).add(x);
+					if(compare(r.keys.get(y),value)>=0)
+					break;
 				}
+							
+				r.keys.add(y, value);
+				r.pointers_r.add(y,new ArrayList<record>());
+				r.pointers_r.get(y).add(x);
+				
 			}
 			   
 			
 			
 			else	//split it
 			{
-				System.out.println("H");
 				treenode newnode = new treenode();   
 				newnode.leaf = true;
 				ArrayList<String> keylist = new ArrayList<String>(r.keys);
@@ -423,33 +359,19 @@ class Btree implements Serializable
 				t.keys = keylist;
 				t.pointers_r = pointerlist;  
 				
-//				if(compare(t.keys.get(0), value)>0)  
-//				{
-//					System.out.println("I");
-//					t.keys.add(0, value);
-//					t.pointers_r.add(0,new ArrayList<record>());
-//					t.pointers_r.get(0).add(x);
-//				}
-						
-//				else
-				{
-					System.out.println("J");
-					int y;
-					System.out.println("t.keys.size"+t.keys.size());
-					
-					for(y=0; y<t.keys.size(); y++)
-					{
-						if(compare(t.keys.get(y),value)>=0)
-						break;
-					}
-					
-					System.out.println("yis"+y);
-					t.keys.add(y, value);
-					t.pointers_r.add(y,new ArrayList<record>());
-					t.pointers_r.get(y).add(x);
-				}
 				
-				System.out.println("K");
+				int y;
+					
+				for(y=0; y<t.keys.size(); y++)
+				{
+					if(compare(t.keys.get(y),value)>=0)
+					break;
+				}
+					
+				t.keys.add(y, value);
+				t.pointers_r.add(y,new ArrayList<record>());
+				t.pointers_r.get(y).add(x);
+				
 				newnode.right_leaf = r.right_leaf;   
 				r.right_leaf = newnode;
 				
@@ -458,9 +380,7 @@ class Btree implements Serializable
 				r.pointers_r = null;
 				r.pointers_r = new ArrayList<ArrayList<record>>();
 				
-				System.out.println("r.keyssize"+r.keys.size()+"pointsize"+r.pointers_r.size());
 				int h;
-				//System.out.println("h"+h+"r.keyssize"+r.keys.size()+"pointsize"+r.pointers_r.size());
 				
 				for( h=0; h<(int)Math.ceil((float)N/2)-1; h++)       
 				{
@@ -472,32 +392,12 @@ class Btree implements Serializable
 				for(int m=(int)Math.ceil((float)N/2)-1; m<N; m++)     
 				{
 					newnode.keys.add(m-((int)Math.ceil((float)N/2)-1),t.keys.get(m));
-					System.out.println("abcdefghijlkm"+newnode.keys.size());
 					newnode.pointers_r.add(m-((int)Math.ceil((float)N/2)-1),new ArrayList<record>());
 					newnode.pointers_r.set(m-((int)Math.ceil((float)N/2)-1),t.pointers_r.get(m));
-					System.out.println("nopqrstuvwxyz"+newnode.pointers_r.size());
 				}
 				
-				if(value.equals("5.0"))
-				{
-					System.out.println("mmmm");
-					System.out.println(r.keys.get(0));
-					System.out.println(newnode.keys.get(0));
-					System.out.println(newnode.keys.get(1));
-				}
-		
-				
-				System.out.println("L");
 				String k = newnode.keys.get(0);	
 				
-				System.out.println("r.key0"+r.keys.get(0));
-				System.out.println("new.key0"+newnode.keys.get(0));
-				
-				if(r.parent!=null && r.parent.keys.size()>1)
-				{
-					System.out.println(r.parent.keys.get(0));
-					System.out.println(r.parent.keys.get(1));
-				}
 				
 				insert_in_parent(r,k,newnode);		
 			}
@@ -507,11 +407,9 @@ class Btree implements Serializable
 	
 	public void insert_in_parent(treenode a, String b, treenode c)
 	{
-		System.out.println("b is "+b);
 		
 		if(a.parent == null)
 		{
-			System.out.println("M");
 			treenode r = new treenode();
 			r.keys.add(b);
 			r.pointers_tn.add(0,a);
@@ -521,19 +419,13 @@ class Btree implements Serializable
 			root = r;
 			root.leaf = false;
 			return;
-		}
-		
-		
+		}	
 		
 		treenode p = a.parent;
-		System.out.println("p.key.get0"+p.keys.get(0));
-		if(p.keys.size()>1)
-			System.out.println("p.key.get0"+p.keys.get(1));
 		
 		
 		if(p.pointers_tn.size()<N)
 		{
-			System.out.println("N");
 			int index = 0;
 			
 			for(int i=0;i<p.pointers_tn.size();i++)
@@ -547,7 +439,6 @@ class Btree implements Serializable
 				
 			}
 			
-			System.out.println("O");
 			p.pointers_tn.add(index+1,c);
 			p.keys.add(index,b);
 			c.parent = p;
@@ -555,7 +446,6 @@ class Btree implements Serializable
 		
 		else	//splitttt
 		{
-			System.out.println("P");
 			treenode t = new treenode();
 			
 			ArrayList<String> keylist = new ArrayList<String>(p.keys);
@@ -574,18 +464,15 @@ class Btree implements Serializable
 
 			
 			int index = 0;
-			System.out.println("uooo"+p.pointers_tn.size());
 			for(int i=0;i<p.pointers_tn.size();i++)
 			{
 				if(p.pointers_tn.get(i)==a)
 				{
 					index=i;
-					System.out.println("HELLOOO"+i);
 					break;
 				}
 			}
 			
-			System.out.println("Q");
 			t.pointers_tn.add(index+1,c);
 			//c.parent = t;
 			t.keys.add(index,b);
@@ -597,8 +484,6 @@ class Btree implements Serializable
 			p.pointers_tn = new ArrayList<treenode>();
 			
 			treenode temp = new treenode();
-		
-			System.out.println("yoyo"+((int)Math.ceil((float)N/2)));
 			
 			for(int i=0;i<((int)Math.ceil((float)N/2) - 1);i++)
 			{
@@ -622,11 +507,11 @@ class Btree implements Serializable
 			temp.pointers_tn.add(t.pointers_tn.get(N));
 			t.pointers_tn.get(N).parent = temp;
 			
-			System.out.println("R");
 			insert_in_parent(p, key, temp);
 		}
 	}
 	
+	//-----------------------------------------------------------------------------------------
 	
 	public void delete(record x)
 	{
@@ -652,11 +537,18 @@ class Btree implements Serializable
 		}
 		
 		findret obj =find(value);
+		if(obj==null)
+		{
+			System.out.println("No such record exists");
+			return;
+		}
 		delete_entry(obj.r,value);
+		
 	}
 	
 	public void delete_entry(treenode r, String value)
 	{
+		
 		int index = r.keys.indexOf(value);
 		r.keys.remove(index);
 		
@@ -671,7 +563,7 @@ class Btree implements Serializable
 		}		
 		else
 		{
-			r.pointers_tn.remove(index);
+			r.pointers_tn.remove(index+1);
 		}
 		
 		if(root==r && (r.pointers_tn.size()==1))
@@ -681,24 +573,30 @@ class Btree implements Serializable
 		}
 		else if ((r.leaf==true && r.keys.size() < Math.ceil(((double)N-1)/2)) || (r.leaf!=true && r.pointers_tn.size() < Math.ceil((double)N/2)))	
 		{
+			 
 			treenode temp;
+			
 			treenode parent = r.parent ;
 			String k;
 			if(parent.pointers_tn.get(parent.pointers_tn.size()-1)==r)
 			{
+				 
 				temp = parent.pointers_tn.get(parent.pointers_tn.size()-2);
 				k =  parent.keys.get(parent.pointers_tn.size()-2);
 			}			
 			else
 			{
+				 
 				temp = parent.pointers_tn.get(parent.pointers_tn.indexOf(r)+1);
 				k = parent.keys.get(parent.pointers_tn.indexOf(r));
 			}
 			
-			if((r.leaf == true && (r.pointers_r.size()+temp.pointers_r.size()<N)) || (r.leaf == false && (r.pointers_tn.size()+temp.pointers_tn.size()<N)))
+			if((r.leaf == true && (r.pointers_r.size()+temp.pointers_r.size()<N)) || (r.leaf == false && (r.pointers_tn.size()+temp.pointers_tn.size()<=N)))
 			{
+				 
 				if(parent.pointers_tn.indexOf(r)<parent.pointers_tn.indexOf(temp))
 				{
+					 
 					treenode node = r;
 					r = temp ;
 					temp = node;
@@ -706,6 +604,7 @@ class Btree implements Serializable
 				
 				if(r.leaf == false)
 				{
+					 
 					temp.keys.add(k);
 					for(int i=0;i<r.keys.size();i++)
 					{
@@ -716,34 +615,40 @@ class Btree implements Serializable
 					{
 						temp.pointers_tn.add(r.pointers_tn.get(i));						
 					}					
-					
+ 
 				}
 				
 				else
 				{
+					 
 					for(int i=0;i<r.keys.size();i++)
 					{
 						temp.keys.add(r.keys.get(i));
-						
+						 
 					}
-					for(int i=0;i<r.pointers_tn.size();i++)
+					for(int i=0;i<r.pointers_r.size();i++)
 					{
-						temp.pointers_r.add(r.pointers_r.get(i));						
+						temp.pointers_r.add(r.pointers_r.get(i));
+						 
 					}
 					
 					temp.right_leaf = r.right_leaf;
+					 
 				}
-				
+			 
 				delete_entry(parent,k);
 				r = null;				
 			}
 			
 			else
 			{
+				 
 				if(parent.pointers_tn.indexOf(temp)<parent.pointers_tn.indexOf(r))
 				{ 
+					 
 					if(r.leaf == false)
 					{
+						 
 						int m = temp.pointers_tn.size()-1;
 						treenode node = temp.pointers_tn.get(m);
 						String key = temp.keys.get(m-1);
@@ -758,6 +663,7 @@ class Btree implements Serializable
 					
 					else
 					{
+						 
 						int m = temp.pointers_r.size()-1;
 						ArrayList<record> rec = temp.pointers_r.get(m);
 						String key = temp.keys.get(m);
@@ -775,15 +681,16 @@ class Btree implements Serializable
 				
 				else
 				{
-					if(temp.leaf == false)
+					 
+					
+					if(r.leaf == false)
 					{
-						int m = r.pointers_tn.size()-1;
-						treenode node = r.pointers_tn.get(m);
-						String key = r.keys.get(m-1);
-						r.keys.remove(m-1);
-						r.pointers_tn.remove(m);
-						temp.pointers_tn.add(0,node);
-						temp.keys.add(0,k);
+						treenode node_temp = temp.pointers_tn.get(0);
+						String key = temp.keys.get(0);
+						temp.keys.remove(0);
+						temp.pointers_tn.remove(0);
+						r.pointers_tn.add(node_temp);
+						r.keys.add(k);
 						
 						int a = parent.keys.indexOf(k);
 						parent.keys.set(a,key);
@@ -791,14 +698,15 @@ class Btree implements Serializable
 					
 					else
 					{
-						int m = r.pointers_r.size()-1;
-						ArrayList<record> rec = r.pointers_r.get(m);
-						String key = r.keys.get(m);
-						r.pointers_r.remove(m);
-						r.keys.remove(m);
+						 
+						 
+						ArrayList<record> rec = temp.pointers_r.get(0);
+						String key = temp.keys.get(0);
+						temp.pointers_r.remove(0);
+						temp.keys.remove(0);
 						
-						temp.pointers_r.add(0,rec);
-						temp.keys.add(0,key);
+						r.pointers_r.add(rec);
+						r.keys.add(k);
 						
 						int a = parent.keys.indexOf(k);
 						parent.keys.set(a,key);
@@ -853,14 +761,6 @@ class treenode implements Serializable
 		keys = new ArrayList<String>();
 		pointers_tn = new ArrayList<treenode>();
 		pointers_r = new ArrayList<ArrayList<record>>();
-//		for(int i = 0; i<10; i++)
-//		{
-//			pointers_r.add(i, new ArrayList<record>());
-//		}
-		
-//		System.out.println("size is: "+pointers_r.size());
-			
-//		leaf = true;
 	}
 }
 
@@ -897,47 +797,54 @@ public class Assignment3
 	Btree tree;
 	ArrayList<record> recList;
 	
-	public void create_database()
+	public void create_database() throws ClassNotFoundException, IOException
 	{
-		BufferedReader br = null;
-        try
-        {
-            br = new BufferedReader(new FileReader("data.csv"));
-            
-            recList = new ArrayList<record>();
-        
-            String line = "";
-
-            while ((line = br.readLine()) != null) 
-            {
-                String[] recDetails = line.split(",");
-                
-                if(recDetails.length > 0 )
-                {
-                    record rec = new record(recDetails[0],recDetails[1],recDetails[2],recDetails[3],Double.parseDouble(recDetails[4]));
-                    tree.insert(rec);
-                    recList.add(rec);
-                }
-            }
-        }
-        
-        catch(Exception ee)
-        {
-            ee.printStackTrace();
-        }
-        
-        finally
-        {
-            try
-            {
-                br.close();
-            }
-            catch(IOException ie)
-            {
-                System.out.println("Error occured while closing the BufferedReader");
-                ie.printStackTrace();
-            }
-        }
+//		BufferedReader br = null;
+//        try
+//        {
+//            br = new BufferedReader(new FileReader("data.csv"));
+//            
+//            recList = new ArrayList<record>();
+//        
+//            String line = "";
+//
+//            while ((line = br.readLine()) != null) 
+//            {
+//                String[] recDetails = line.split(",");
+//                
+//                if(recDetails.length > 0 )
+//                {
+//                    record rec = new record(recDetails[0],recDetails[1],recDetails[2],recDetails[3],Double.parseDouble(recDetails[4]));
+//                    tree.insert(rec);
+//                    recList.add(rec);
+//                }
+//            }
+//        }
+//        
+//        catch(Exception ee)
+//        {
+//            ee.printStackTrace();
+//        }
+//        
+//        finally
+//        {
+//            try
+//            {
+//                br.close();
+//            }
+//            catch(IOException ie)
+//            {
+//                System.out.println("Error occured while closing the BufferedReader");
+//                ie.printStackTrace();
+//            }
+//        }
+		
+		ArrayList<record> l = deserialize("");
+		recList = l;
+		for(int u =0; u<l.size(); u++)
+		{
+			tree.insert(l.get(u));
+		}
 	}
 	
 	
@@ -977,6 +884,7 @@ public class Assignment3
 	public static void serialize(List<record> p) throws IOException 
 	{
 		ObjectOutputStream out = null;
+		
 		try 
 		{
 			out = new ObjectOutputStream (new FileOutputStream("Records.txt"));
@@ -990,14 +898,14 @@ public class Assignment3
 	}
 	
 	
-	public static List<record> deserialize(String name) throws IOException, ClassNotFoundException 
+	public static ArrayList<record> deserialize(String name) throws IOException, ClassNotFoundException 
 	{
 		ObjectInputStream in = null;
 		try 
 		{
 			in = new ObjectInputStream (new FileInputStream("Records.txt"));
 			@SuppressWarnings("unchecked")
-			List<record> p = (List<record>) in.readObject();
+			ArrayList<record> p = (ArrayList<record>) in.readObject();
 			return p;
 		} 
 		
@@ -1013,19 +921,17 @@ public class Assignment3
 		R.init(System.in);
 		System.out.println("Enter field for B+tree: ");
 
-		Assignment3 obj = new Assignment3();	
+		Assignment3 obj = new Assignment3();
 		
 		String field = R.reader.readLine();
 		obj.tree = new Btree();
-		
 		obj.tree.field = field;
-	
 		
 		obj.database = new ArrayList<record>();
 		obj.create_database();
-		
 		obj.tree.db = new ArrayList<record>(obj.database);
 		obj.tree.shallowdb = obj.database;
+		
 		serialize(obj.tree);
 	
 		int choose = -1;
@@ -1056,7 +962,7 @@ public class Assignment3
 						else
 						{
 							System.out.println("Value was found");
-							//record display
+							//print record
 						}
 						break;
 						
@@ -1084,7 +990,6 @@ public class Assignment3
 						String d = R.reader.readLine();
 						System.out.println("Enter Salary: ");
 						Double e = R.nextDouble();
-						
 						record x = new record(a,b,c,d,e);
 						tree.insert(x);
 						System.out.println("Successfully inserted record");
@@ -1103,7 +1008,6 @@ public class Assignment3
 						String D = R.reader.readLine();
 						System.out.println("Enter Salary: ");
 						Double E = R.nextDouble();
-				
 						record y = new record(A,B,C,D,E);
 						tree.delete(y);
 						System.out.println("Successfully deleted record");
@@ -1115,51 +1019,6 @@ public class Assignment3
 			serialize(tree);
 			
 		}while(choose!=6);
-		
-		
-		
-		
-		
-//		findret leaf1 = obj.tree.find("2.0");
-//		System.out.println(leaf1==null);
-//		System.out.println();
-//		treenode leafone =leaf1.r;
-//		System.out.println("jdhdkjchkwc"+obj.tree.root.keys.size());
-//		System.out.println(obj.tree.root.keys.get(0));
-//		
-//		System.out.println(tree.root.keys.get(1));
-//		System.out.println(obj.tree.root.pointers_tn.get(0).keys.get(0));
-//		System.out.println(obj.tree.root.pointers_tn.get(1).keys.get(0));
-//		System.out.println(obj.tree.root.pointers_tn.get(1).keys.get(1));
-////		System.out.println(tree.root.pointers_tn.get(2).keys.get(0));
-////		System.out.println(tree.root.pointers_tn.get(2).keys.get(1));
-//		System.out.println(obj.tree.root.pointers_tn.get(0).pointers_tn.get(0).keys.get(0));
-//		System.out.println(obj.tree.root.pointers_tn.get(0).pointers_tn.get(1).keys.get(0));
-//		System.out.println(tree.root.pointers_tn.get(1).pointers_tn.get(0).keys.get(0));
-//		System.out.println(tree.root.pointers_tn.get(1).pointers_tn.get(1).keys.get(0));
-//		System.out.println(tree.root.pointers_tn.get(1).pointers_tn.get(1).keys.get(1));
-//		System.out.println();
-//		System.out.println(tree.root.pointers_tn.get(2).keys.get(1));
-//		System.out.println(tree.root.pointers_tn.get(3).keys.get(0));
-//		System.out.println(tree.root.pointers_tn.get(3).keys.get(1));
-		
-		//System.out.println(tree.root.keys.get(1));
-//		while(leafone!=null)
-//		{
-//			for(int i=0;i<leafone.keys.size();i++)
-//			{
-//				System.out.println(leafone.keys.get(i));
-//			}
-//			
-//			
-//			leafone = leafone.right_leaf;
-//		}
-//		
-//		System.out.println("Test printall");
-//		//obj.tree.printAll("oneDept");
-//		
-//		System.out.println("Test findin range");
-//		//obj.tree.FindRange("fiveDept", "oneDept");
 
  	}
 
