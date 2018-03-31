@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.*;
@@ -69,51 +70,51 @@ class findret
 }
 
 
-class Btree
+class Btree implements Serializable
 {
 	int num_nodes = 0;
 	ArrayList<record> db;
 	ArrayList<record> shallowdb;
 	int N = 3;
-	
-	
+
+	ArrayList<record> allrec;	
 	treenode root;
 	String field;
 	
 	
+	public static void serialize(List<record> p) throws IOException 
+	{
+		ObjectOutputStream out = null;
+		try 
+		{
+			out = new ObjectOutputStream (new FileOutputStream("Records.txt"));
+			out.writeObject(p);
+		}
+		
+		finally 
+		{
+			out.close();
+		}
+	}
 	
 	
-//	public static void serialize( p) throws IOException 
-//	{
-//		ObjectOutputStream out = null;
-//		try 
-//		{
-//			out = new ObjectOutputStream (new FileOutputStream("./src/" + p.getplaylistname() + ".txt"));
-//			out.writeObject(p);
-//		}
-//		
-//		finally 
-//		{
-//			out.close();
-//		}
-//	}
-//	
-//	
-//	public static Playlist deserialize(String name) throws IOException, ClassNotFoundException 
-//	{
-//		ObjectInputStream in = null;
-//		try 
-//		{
-//			in = new ObjectInputStream (new FileInputStream("./src/" + name + ".txt"));
-//			Playlist p = (Playlist) in.readObject();
-//			return p;
-//		} 
-//		
-//		finally 
-//		{
-//			in.close();
-//		}
-//	}
+	public static List<record> deserialize() throws IOException, ClassNotFoundException 
+	{
+		ObjectInputStream in = null;
+		try 
+		{
+			in = new ObjectInputStream (new FileInputStream("Records.txt"));
+			@SuppressWarnings("unchecked")
+			List<record> p = (List<record>) in.readObject();
+			return p;
+		} 
+		
+		finally 
+		{
+			in.close();
+		}
+	}
+	
 	
 	
 	public void printAll(String v)
@@ -361,7 +362,7 @@ class Btree
 	
 	//------------------------------------------------------------------------------
 	
-	public void insert(record x) 
+	public void insert(record x) throws IOException 
 	{
 		String value;
 		System.out.println(field);
@@ -443,11 +444,7 @@ class Btree
 					r.pointers_r.get(y).add(x);
 				}
 			}
-			
-			
-		//          twoDept
-		//   threedept	  twodept
-		//onedept  threedept      
+			   
 			
 			
 			else	//split it
@@ -537,9 +534,15 @@ class Btree
 					System.out.println(r.parent.keys.get(0));
 					System.out.println(r.parent.keys.get(1));
 				}
-				insert_in_parent(r,k,newnode);
+				
+				insert_in_parent(r,k,newnode);		
 			}
 		}
+		
+		if(allrec == null)
+			allrec = new ArrayList<record>();
+		allrec.add(x);
+		serialize(allrec);
 	}
 	
 	
@@ -876,7 +879,7 @@ class Btree
 	}
 }
 
-class treenode
+class treenode implements Serializable
 {	
 	ArrayList<String> keys;
 	boolean leaf;
@@ -903,7 +906,7 @@ class treenode
 }
 
 
-class record
+class record implements Serializable
 {
 	String validity;		//4
 	String instructor_id;	//4
@@ -929,23 +932,23 @@ class record
 
 
  
-public class Assignment3 
+public class Assignment3
 {
 	ArrayList<record> database;
 	Btree tree;
+	ArrayList<record> recList;
 	
 	public void create_database()
 	{
-		//reading part, put into database
 		BufferedReader br = null;
         try
         {
-            //Reading the csv file
             br = new BufferedReader(new FileReader("data.csv"));
             
+            recList = new ArrayList<record>();
+        
             String line = "";
 
-            //Reading from the second line
             while ((line = br.readLine()) != null) 
             {
                 String[] recDetails = line.split(",");
@@ -954,6 +957,7 @@ public class Assignment3
                 {
                     record rec = new record(recDetails[0],recDetails[1],recDetails[2],recDetails[3],Double.parseDouble(recDetails[4]));
                     tree.insert(rec);
+                    recList.add(rec);
                 }
             }
         }
@@ -976,12 +980,45 @@ public class Assignment3
             }
         }
 	}
+	
+	
+	public static void serialize(Btree p) throws IOException 
+	{
+		ObjectOutputStream out = null;
+		try 
+		{
+			out = new ObjectOutputStream (new FileOutputStream("Btree.txt"));
+			out.writeObject(p);
+		}
+		
+		finally 
+		{
+			out.close();
+		}
+	}
+	
+	
+	public static Btree deserialize() throws IOException, ClassNotFoundException 
+	{
+		ObjectInputStream in = null;
+		try 
+		{
+			in = new ObjectInputStream (new FileInputStream("Btree.txt"));
+			Btree p = (Btree) in.readObject();
+			return p;
+		} 
+		
+		finally 
+		{
+			in.close();
+		}
+	}
 
 	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, ClassNotFoundException
 	{
 		R.init(System.in);
-		System.out.println("Enter field: ");
+		System.out.println("Enter field for B+tree: ");
 
 		Assignment3 obj = new Assignment3();	
 		
@@ -993,351 +1030,120 @@ public class Assignment3
 		
 		obj.database = new ArrayList<record>();
 		obj.create_database();
-		
-		obj.tree.db = new ArrayList<record>(obj.database);
-		obj.tree.shallowdb = obj.database;	
-//		treenode parent = new treenode();
-//		treenode child = new treenode();
-//		parent.pointers_tn.add(child);
-//		child.parent = parent;
-//		
-//		System.out.println(child.parent.pointers_tn.get(0)==child);
-//		
-//		record one = new record("1","oneID","oneName","oneDept",1.0);
-//		record two = new record("1","twoID","twoName","twoDept",2.0);
-//		record three = new record("1","threeID","threeName","threeDept",3.0);
-//		record four = new record("1","fourID","fourName","fourDept",4.0);
-//		record five = new record("1","fiveID","fiveName","fiveDept",5.0);
-//		record six = new record("1","sixID","sixName","sixDept",6.0);
-//		record seven = new record("1","fiveID","sevenName","sevenDept",7.0);
-//		record eight = new record("1","fiveID","eightName","eightDept",8.0);
-//		record nine = new record("1","fiveID","nineName","nineDept",9.0);
-//		record ten = new record("1","fiveID","tenName","tenDept",10.0);
-//		
-//		
-//		obj.tree.insert(one);
-//		obj.tree.insert(two);
-//		obj.tree.insert(three);
-//		obj.tree.insert(four);
-//		obj.tree.insert(five);
-//		obj.tree.insert(six);
-//		tree.insert(seven);
-//		tree.insert(eight);
-//		tree.insert(nine);
-//		tree.insert(ten);
-//		
-		
-		
-//		record first = new record("1111","A","A","A",1234);
-//		record second = new record("1111","B","B","B",1234);
-//		record third = new record("1111","C","A","A",1234);
-//		record fourth = new record("1111","D","B","B",1234);
-//		record fifth= new record("1111","E","A","A",1234);
-//        record six = new record("1111","F","B","B",1234);
-//		record seven = new record("1111","Gb","A","A",1234);
-//		record eight = new record("1111","Ga","B","B",1234);
-//		record nine = new record("1111","G","B","B",1234);
-//		record eleven = new record("1111","H","B","B",1234);
-//		record ten = new record("1111","Freeq","B","B",1234);
-//		record twel = new record("1111","I","B","B",1234);
-//		record thirt = new record("1111","J","B","B",1234);
-//		record fourt = new record("1111","Da","B","B",1234);
-//		record fift =  new record("1111","Db","B","B",1234);
-//		record sixt = new record("1111","Ca","B","B",1234);
-//		record sevent =  new record("1111","Cb","B","B",1234);
-//		record eightt = new record("1111","Ia","B","B",1234);
-//		record ninet =  new record("1111","Ib","B","B",1234);
-//		record thirty = new record("1111","Ayne","B","B",1234);
-//		record thirto = new record("1111","Ona","B","B",1234);
-//		
-//		record sev = new record("1111","You","B","B",1234);
-//		record a = new record("1111","Jone","B","B",1234);
-//		record b = new record("1111","Oye","B","B",1234);
-//		record c = new record("1111","TOna","B","B",1234);
-//		record d = new record("1111","Tni","B","B",1234);
-//		record e = new record("1111","Yiu","B","B",1234);
-//		record f = new record("1111","Zoi","B","B",1234);
-//		record g = new record("1111","Oyi","B","B",1234);
-//		record h = new record("1111","Onab","B","B",1234);
-//		record p = new record("1111","Tani","B","B",1234);
-//		record y = new record("1111","Bob","B","B",1234);
-//		record z = new record("1111","Cat","B","B",1234);
-//		record k = new record("1111","Dark","B","B",1234);
-//		record l = new record("1111","Abiee","B","B",1234);
-//		record q = new record("1111","Cani","B","B",1234);
-//		record r = new record("1111","Dob","B","B",1234);
-//		record s = new record("1111","Dat","B","B",1234);
-//		record t = new record("1111","Cark","B","B",1234);
-//		record u = new record("1111","Dbiee","B","B",1234);
-//		record A = new record("1111","Aone","B","B",1234);
-//		record B = new record("1111","Aye","B","B",1234);
-//		record C = new record("1111","AOna","B","B",1234);
-//		record D = new record("1111","Ani","B","B",1234);
-//		record E = new record("1111","Aiu","B","B",1234);
-//		record F = new record("1111","Eoi","B","B",1234);
-//		record G = new record("1111","Eyi","B","B",1234);
-//		record H = new record("1111","Enab","B","B",1234);
-//		record P = new record("1111","Eani","B","B",1234);
-//		record Y = new record("1111","Eob","B","B",1234);
-//		record Z = new record("1111","Yat","B","B",1234);
-//		record K = new record("1111","Yark","B","B",1234);
-//		record L = new record("1111","YAbiee","B","B",1234);
-//		record Q = new record("1111","Yani","B","B",1234);
-//		record R = new record("1111","Ydob","B","B",1234);
-//		record S = new record("1111","Zat","B","B",1234);
-//		record T = new record("1111","Zark","B","B",1234);
-//		record U = new record("1111","Zbiee","B","B",1234);
-//		record W = new record("1111","Zani","B","B",1234);
-//		record N = new record("1111","Zdob","B","B",1234);
-//		record twe = new record("1111","TZani","B","B",1234);
-//		record tweo = new record("1111","Tdob","B","B",1234);
-//		record first1 = new record("1111","Tanya","A","A",1234);
-//		record second1 = new record("1111","Aarushi","B","B",1234);
-//		record third1 = new record("1111","Aishwarya","A","A",1234);
-//		record fourth1 = new record("1111","4","B","B",1234);
-//		record fifth1= new record("1111","5","A","A",1234);
-//		record six1 = new record("1111","6","6","B",1234);
-//		record seven1 = new record("1111","7","A","A",1234);
-//		record eight1 = new record("1111","8","B","B",1234);
-//		record nine1 = new record("1111","9","B","B",1234);
-//		record eleven1 = new record("1111","10","B","B",1234);
-//		record ten1 = new record("1111","11","B","B",1234);
-//		record twel1 = new record("1111","I3","B","B",1234);
-//		record thirt1 = new record("1111","J5","B","B",1234);
-//		record fourt1 = new record("1111","K5","B","B",1234);
-//		record fift1 = new record("1111","Ay4ne","B","B",1234);
-//		record sixt1 = new record("1111","Onka","B","B",1234);
-//		record sev1 = new record("1111","Yoklu","B","B",1234);
-//		record a1 = new record("1111","Jonme","B","B",1234);
-//		record b1 = new record("1111","Oymke","B","B",1234);
-//		record c1 = new record("1111","TgkOna","B","B",1234);
-//		record d1 = new record("1111","Tnji","B","B",1234);
-//		record e1 = new record("1111","Yijgu","B","B",1234);
-//		record f1 = new record("1111","Zjhoi","B","B",1234);
-//		record g1 = new record("1111","jfOyi","B","B",1234);
-//		record h1 = new record("1111","Onhfab","B","B",1234);
-//		record p1 = new record("1111","Thkani","B","B",1234);
-//		record y1 = new record("1111","Bklhob","B","B",1234);
-//		record z1 = new record("1111","Cklat","B","B",1234);
-//		record k1 = new record("1111","Dkrgark","B","B",1234);
-//		record l1 = new record("1111","Akfhlbiee","B","B",1234);
-//		record q1 = new record("1111","Ckfhani","B","B",1234);
-//		record r1 = new record("1111","Dhkfob","B","B",1234);
-//		record s1 = new record("1111","Dkgat","B","B",1234);
-//		record t1 = new record("1111","Cklfark","B","B",1234);
-//		record u1 = new record("1111","Dlfbiee","B","B",1234);
-//		record A1 = new record("1111","Alfone","B","B",1234);
-//		record B1 = new record("1111","Alfye","B","B",1234);
-//		record C1 = new record("1111","AlOna","B","B",1234);
-//		record D1 = new record("1111","Alfni","B","B",1234);
-//		record E1 = new record("1111","Ahkiu","B","B",1234);
-//		record F1 = new record("1111","gEoi","B","B",1234);
-//		record G1 = new record("1111","Eygi","B","B",1234);
-//		record H1 = new record("1111","Enfjab","B","B",1234);
-//		record P1 = new record("1111","Ekggfani","B","B",1234);
-//		record Y1 = new record("1111","Egfob","B","B",1234);
-//		record Z1 = new record("1111","Ygkat","B","B",1234);
-//		record K1 = new record("1111","Ylfark","B","B",1234);
-//		record L1 = new record("1111","YgfAbiee","B","B",1234);
-//		record Q1 = new record("1111","Ykgani","B","B",1234);
-//		record R1 = new record("1111","Yjgfdob","B","B",1234);
-//		record S1 = new record("1111","Zklffgat","B","B",1234);
-//		record T1 = new record("1111","Zagkfflkrk","B","B",1234);
-//		record U1 = new record("1111","Zkfkgfbiee","B","B",1234);
-//		record W1 = new record("1111","Zgkani","B","B",1234);
-//		record N1 = new record("1111","Zgfjdob","B","B",1234);
-//		record twe1 = new record("1111","Tgfani","B","B",1234);
-//		record tweo1 = new record("1111","Tgfdob","B","B",1234);
-//		
-//		
-//		
-//		tree.insert(first);
-//		tree.insert(second);
-//		tree.insert(third);
-//		tree.insert(fourth);
-//		tree.insert(fifth);
-//		tree.insert(six);
-//		tree.insert(nine);
-//		tree.insert(eleven);
-//		tree.insert(twel);
-//		tree.insert(thirt);
-//		tree.insert(fourt);
-//		tree.insert(fift);
-//		tree.insert(sixt);
-//		tree.insert(sev);
-//		tree.insert(a);
-//		tree.insert(b);
-//		tree.insert(c);
-//		tree.insert(d);
-//		tree.insert(e);
-//		tree.insert(f);
-//		tree.insert(g);
-//		tree.insert(h);
-//		tree.insert(p);
-//		tree.insert(y);
-//		tree.insert(z);
-//		tree.insert(k);
-//		tree.insert(l);
-//		tree.insert(q);
-//		tree.insert(fift);
-//		tree.insert(sixt);
-//		tree.insert(sevent);
-//		tree.insert(seven);
-//		tree.insert(eight);
-//		tree.insert(ninet);
-//		tree.insert(eightt);
-//		tree.insert(r);
-//		tree.insert(s);
-//		tree.insert(t);
-//		tree.insert(u);
-//		tree.insert(a);
-//		tree.insert(B);
-//		tree.insert(C);
-//		tree.insert(D);
-//		tree.insert(E);
-//		tree.insert(F);
-//		tree.insert(G);
-//		tree.insert(H);
-//		tree.insert(P);
-//		tree.insert(Y);
-//		tree.insert(Z);
-//		tree.insert(K);
-//		tree.insert(L);
-//		tree.insert(Q);
-//		tree.insert(R);
-//		tree.insert(S);
-//		tree.insert(T);
-//		tree.insert(U);
-//		tree.insert(W);
-//		tree.insert(N);
-//		tree.insert(twe);
-//		tree.insert(tweo);
-//		tree.insert(first);
-//		tree.insert(second);
-//		tree.insert(third);
-//		tree.insert(fourth);
-//		tree.insert(fifth);
-//		tree.insert(six);
-//		tree.insert(seven);
-//		tree.insert(eight);
-//		tree.insert(nine);
-//		tree.insert(eleven);
-//		tree.insert(twel);
-//		tree.insert(thirt);
-//		tree.insert(fourt);
-//		tree.insert(fift);
-//		tree.insert(sixt);
-//		tree.insert(sev);
-//		tree.insert(a);
-//		tree.insert(b);
-//		tree.insert(c);
-//		tree.insert(d);
-//		tree.insert(e);
-//		tree.insert(f);
-//		tree.insert(g);
-//		tree.insert(h);
-//		tree.insert(p);
-//		tree.insert(y);
-//		tree.insert(z);
-//		tree.insert(k);
-//		tree.insert(l);
-//		tree.insert(q);
-//		tree.insert(r);
-//		tree.insert(s);
-//		tree.insert(t);
-//		tree.insert(u);
-//		tree.insert(a);
-//		tree.insert(B);
-//		tree.insert(C);
-//		tree.insert(D);
-//		tree.insert(E);
-//		tree.insert(F);
-//		tree.insert(G);
-//		tree.insert(H);
-//		tree.insert(P);
-//		tree.insert(Y);
-//		tree.insert(Z);
-//		tree.insert(K);
-//		tree.insert(L);
-//		tree.insert(Q);
-//		tree.insert(R);
-//		tree.insert(S);
-//		tree.insert(T);
-//		tree.insert(U);
-//		tree.insert(W);
-//		tree.insert(N);
-//		tree.insert(twe);
-//		tree.insert(tweo);
-//		tree.insert(first1);
-//		tree.insert(second1);
-//		tree.insert(third1);
-//		tree.insert(fourth1);
-//		tree.insert(fifth1);
-//		tree.insert(six1);
-//		tree.insert(seven1);
-//		tree.insert(eight1);
-//		tree.insert(ten1);
-//		tree.insert(nine1);
-//		tree.insert(eleven1);
-//		tree.insert(twel1);
-//		tree.insert(thirt1);
-//		tree.insert(fourt1);
-//		tree.insert(fift1);
-//		tree.insert(sixt1);
-//		tree.insert(sev1);
-//		tree.insert(a1);
-//		tree.insert(b1);
-//		tree.insert(c1);
-//		tree.insert(d1);
-//		tree.insert(e1);
-//		tree.insert(f1);
-//		tree.insert(g1);
-//		tree.insert(h1);
-//		tree.insert(p1);
-//		tree.insert(y1);
-//		tree.insert(z1);
-//		tree.insert(k1);
-//		tree.insert(l1);
-//		tree.insert(q1);
-//		tree.insert(r1);
-//		tree.insert(s1);
-//		tree.insert(t1);
-//		tree.insert(u1);
-//		tree.insert(a1);
-//		tree.insert(B1);
-//		tree.insert(C1);
-//		tree.insert(D1);
-//		tree.insert(E1);
-//		tree.insert(F1);
-//		tree.insert(G1);
-//		tree.insert(H1);
-//		tree.insert(P1);
-//		tree.insert(Y1);
-//		tree.insert(Z1);
-//		tree.insert(K1);
-//		tree.insert(L1);
-//		tree.insert(Q1);
-//		tree.insert(R1);
-//		tree.insert(S1);
-//		tree.insert(T1);
-//		tree.insert(U1);
-//		tree.insert(W1);
-//		tree.insert(N1);
-//		tree.insert(twe1);
-//		tree.insert(tweo1);
-//		tree.insert(ten);
-//		tree.insert(thirty);
-//		tree.insert(thirto);
-
 	
+		//serialize(obj.recList);
+		//List<record> fullist = deserialize();
+		
+		obj.tree.allrec = obj.recList;
+		obj.tree.db = new ArrayList<record>(obj.database);
+		obj.tree.shallowdb = obj.database;
+		serialize(obj.tree);
+	
+		int choose = -1;
+		do
+		{
+			
+			Btree tree = deserialize();
+			
+			System.out.println("Choose operation to perform:");
+			System.out.println("1. Find");
+			System.out.println("2. PrintAll");
+			System.out.println("3. Find in Range");
+			System.out.println("4. Insert");
+			System.out.println("5. Delete");
+			System.out.println("6. Exit");
+			
+			
+			choose = R.nextInt();
+			
+			
+			switch(choose)
+			{
+				case 1: System.out.println("Enter value of search key to find: ");
+						String tofind = R.reader.readLine();
+						findret o = tree.find(tofind);
+						if(o == null)
+							System.out.println("Value not found");
+						else
+						{
+							System.out.println("Value was found");
+							//record display
+						}
+						break;
+						
+				
+				case 2: System.out.println("Enter value of search key to print records: ");
+						String toprintall = R.reader.readLine();
+						tree.printAll(toprintall);
+						break;
+				
+				case 3: System.out.println("Enter lower limit value of Range: ");
+						String low = R.reader.readLine();
+						System.out.println("Enter higher limit value of Range: ");
+						String high = R.reader.readLine();
+						tree.FindRange(low, high);
+						break;
+				
+				case 4: System.out.println("Enter Details of record to insert:");
+						System.out.println("Enter validity: ");
+						String a = R.reader.readLine();
+						System.out.println("Enter Instructor ID: ");
+						String b = R.reader.readLine();
+						System.out.println("Enter Instructor Name: ");
+						String c = R.reader.readLine();
+						System.out.println("Enter Department: ");
+						String d = R.reader.readLine();
+						System.out.println("Enter Salary: ");
+						Double e = R.nextDouble();
+						
+						record x = new record(a,b,c,d,e);
+						tree.insert(x);
+						System.out.println("Successfully inserted record");
+						break;
+				
+				case 5: System.out.println("Enter details of record to delete: "); 
+						System.out.println("Enter validity: ");
+						String A = R.reader.readLine();
+						System.out.println("Enter Instructor ID: ");
+						String B = R.reader.readLine();
+						System.out.println("Enter Instructor Name: ");
+						String C = R.reader.readLine();
+						System.out.println("Enter Department: ");
+						String D = R.reader.readLine();
+						System.out.println("Enter Salary: ");
+						Double E = R.nextDouble();
+				
+						record y = new record(A,B,C,D,E);
+						tree.delete(y);
+						System.out.println("Successfully deleted record");
+						break;
+			}
+			
+			serialize(tree);
+			
+		}while(choose!=6);
 		
 		
-		findret leaf1 = obj.tree.find("twoDept");
-		System.out.println(leaf1==null);
-		System.out.println();
-		treenode leafone =leaf1.r;
-		System.out.println("jdhdkjchkwc"+obj.tree.root.keys.size());
-		System.out.println(obj.tree.root.keys.get(0));
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+//		findret leaf1 = obj.tree.find("2.0");
+//		System.out.println(leaf1==null);
+//		System.out.println();
+//		treenode leafone =leaf1.r;
+//		System.out.println("jdhdkjchkwc"+obj.tree.root.keys.size());
+//		System.out.println(obj.tree.root.keys.get(0));
+//		
 //		System.out.println(tree.root.keys.get(1));
 //		System.out.println(obj.tree.root.pointers_tn.get(0).keys.get(0));
 //		System.out.println(obj.tree.root.pointers_tn.get(1).keys.get(0));
@@ -1355,24 +1161,23 @@ public class Assignment3
 //		System.out.println(tree.root.pointers_tn.get(3).keys.get(1));
 		
 		//System.out.println(tree.root.keys.get(1));
-		while(leafone!=null)
-		{
-			for(int i=0;i<leafone.keys.size();i++)
-			{
-				System.out.println(leafone.keys.get(i));
-			}
-			
-			
-			leafone = leafone.right_leaf;
-			
-		}
-		
-		System.out.println("Test printall");
-		obj.tree.printAll("oneDept");
-		
-		System.out.println("Test findin range");
-		obj.tree.FindRange("fiveDept", "oneDept");
-		
+//		while(leafone!=null)
+//		{
+//			for(int i=0;i<leafone.keys.size();i++)
+//			{
+//				System.out.println(leafone.keys.get(i));
+//			}
+//			
+//			
+//			leafone = leafone.right_leaf;
+//		}
+//		
+//		System.out.println("Test printall");
+//		//obj.tree.printAll("oneDept");
+//		
+//		System.out.println("Test findin range");
+//		//obj.tree.FindRange("fiveDept", "oneDept");
+
  	}
 
 }
